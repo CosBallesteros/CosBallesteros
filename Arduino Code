@@ -1,6 +1,6 @@
 
 
-// Se describen las constantes.
+ // Se describen las constantes.
 const int buttonPin = 4; // número de pin al que está conectado el botón
 const int ledPin1 =  9;  // número de pin al que está conectado el led amarillo
 const int ledPin2 =  10; // número de pin al que está conectado el led naranja
@@ -68,7 +68,7 @@ void loop() {
     if (velocidad < 50) {  //Si la velocidad es menor de 50, es decir, se ha superado el nivel 5:
       velocidad = velocidadInicial; //la velocidad vuelve a la velocidad inicial
       pos = 180;  //la posición del servo vuelve a cero
-      myservo.write(180);
+      myservo.write(pos);
       delay(15); // espera 15 ms
 
     }
@@ -82,7 +82,7 @@ void loop() {
     Serial.println("Velocity increase");
 
     pos = 180;  //la posición del servo vuelve a cero
-    myservo.write(180);
+    myservo.write(pos);
     delay(15); // espera 15 ms
   }
 
