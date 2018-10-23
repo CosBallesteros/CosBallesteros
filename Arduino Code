@@ -1,0 +1,89 @@
+
+
+// Se describen las constantes.
+const int buttonPin = 4; // número de pin al que está conectado el botón
+const int ledPin1 =  9;  // número de pin al que está conectado el led amarillo
+const int ledPin2 =  10; // número de pin al que está conectado el led naranja
+const int ledPin3 =  11; // número de pin al que está conectado el led rojo
+const int ledPin4 =  12; // número de pin al que está conectado el led naranja
+const int ledPin5 =  13; // número de pin al que está conectado el led amarillo
+unsigned long t = 0; 
+
+int velocidadInicial = 1000;  //velocidad inicial a la que deben volver
+int velocidad = 1000; //velocidad a la que se mueven los leds
+int ledOn = 1; //dirección de ida
+int dir = -1;  //dirección de vuelta
+
+int buttonState = 0;
+
+#include <Servo.h>  //añadimos el servo
+Servo myservo;
+int pos = 180;    // establece la posición del servo
+
+
+void setup() {
+
+  myservo.attach(2);  // se conecta el servo al pin 2
+  myservo.write(pos); //que se ponga en posición cero
+
+  pinMode(ledPin5, OUTPUT); //establecemos OutPut
+  pinMode(ledPin4, OUTPUT); //establecemos OutPut
+  pinMode(ledPin3, OUTPUT); //establecemos OutPut
+  pinMode(ledPin2, OUTPUT); //establecemos OutPut
+  pinMode(ledPin1, OUTPUT); //establecemos OutPut
+  pinMode(buttonPin, INPUT); //establecemos InPut
+  t = millis();
+
+  Serial.begin(9600);
+
+}
+
+
+void loop() {
+
+
+  if (millis() - t > velocidad) { //hace que los leds se vayan encendiendo uno a uno consecutivamente y en orden. Cuando uno se apaga el otro de al lado se enciende.
+    digitalWrite(ledOn + 9, LOW);
+    ledOn = ledOn + dir;
+    //Serial.println(ledOn);
+    digitalWrite(ledOn + 9, HIGH);
+
+    if (ledOn == 4) //cuando el led 4 esté encendido, que se invierta la dirección
+      dir = -1;
+    else if (ledOn == 0)
+      dir = 1;
+    t = millis();
+  }
+
+  buttonState = digitalRead(buttonPin);
+
+  if (buttonState == LOW && ledOn == 2 ) { //si el botón está presionado cuando el led número 2, es decir, el del medio está encendido:
+    velocidad = velocidad / 2 ; // la velocidad aumenta
+
+    pos = pos - 24; // el servo rota 24 grados a la derecha a partir de su ultima posición
+    myservo.write(pos); // el servo se mueve los grados indicados en el paso anterior
+    delay(15); // espera 15 ms
+
+
+    if (velocidad < 50) {  //Si la velocidad es menor de 50, es decir, se ha superado el nivel 5:
+      velocidad = velocidadInicial; //la velocidad vuelve a la velocidad inicial
+      pos = 180;  //la posición del servo vuelve a cero
+      myservo.write(180);
+      delay(15); // espera 15 ms
+
+    }
+    delay(1000); // espera 1s
+    Serial.println("Velocity increase");
+
+
+  } else if (buttonState == LOW) { //si el botón está pulsado cuando cualquier otro led que no sea el 2 está encendido:
+    velocidad = velocidadInicial ; //la velocidad vuelve a la velocidad inicial
+    delay(1000); // espera 1s
+    Serial.println("Velocity increase");
+
+    pos = 180;  //la posición del servo vuelve a cero
+    myservo.write(180);
+    delay(15); // espera 15 ms
+  }
+
+}
